@@ -91,9 +91,46 @@ def borrar_usuario_por_nombre():
     print(f"Se ha intentado borrar al usuario '{nombre_usuario}'.")
 
 
+def realizar_consultas_info_general():
+    db_service = DBService()
+
+    # Consulta de películas por categoría
+    print("Consultando películas por categoría 'Acción':")
+    db_service.consultar_peliculas_por_categoria("Accion")
+
+    # Consulta de reservas por DNI
+    print("\nConsultando reservas por DNI '123456789':")
+    db_service.consultar_reservas_por_dni_tipo_boleto("123456789")
+
+    # Consulta de salas por cine
+    print("\nConsultando salas para el cine 'Cinemark Norte':")
+    db_service.consultar_salas_por_cine("Cinemark Norte")
+
+    # Consulta de reservas por usuario
+    print("\nConsultando reservas para el usuario 'Juan Perez':")
+    db_service.consultar_reservas_por_usuario("Juan Perez")
+
+    # Consulta de reservas confirmadas por banco
+    print("\nConsultando reservas confirmadas por el banco 'Banco X':")
+    db_service.consultar_reservas_por_banco("Banco X")
+
+    # Consulta de películas para todos los públicos
+    print("\nConsultando películas para todos los públicos:")
+    db_service.consultar_peliculas_todos_publicos(True)
+
+    # Consulta de usuario por nombre
+    print("\nConsultando usuario por nombre 'Juan Perez':")
+    db_service.consultar_usuario_por_nombre_dni("Juan Perez", "nombre")
+
+    # Consulta de funciones por ciudad
+    print("\nConsultando funciones en la ciudad 'Quito'")
+    db_service.consultar_funciones_por_ciudad("Quito")
+
+
 if __name__ == "__main__":
     # test_cassandra_connection()
     consulta_usuario_pelicula()
     insercion_datos()
     actualizar_datos_pelicula()
-    borrar_usuario_por_nombre()
+    # borrar_usuario_por_nombre()
+    realizar_consultas_info_general()
