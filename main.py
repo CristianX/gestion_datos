@@ -4,17 +4,6 @@ from models.pelicula import Pelicula
 from models.reserva import Reserva
 
 
-# def test_cassandra_connection():
-#     session = get_session()
-#     # Consulta de prueba: obtener todos los keyspaces
-#     rows = session.execute("SELECT keyspace_name FROM system_schema.keyspaces;")
-#     for row in rows:
-#         print(row.keyspace_name)
-
-#     # Asegúrate de cerrar la sesión
-#     session.shutdown()
-
-
 def consulta_usuario_pelicula():
     db_service = DBService()
     usuario = db_service.consultar_usuario_por_dni("123456789")
@@ -71,7 +60,26 @@ def insercion_datos():
     db_service.insertar_sala_en_cine(cine_nombre, cine_id, sala_nro, sala_capacidad)
 
 
+def actualizar_datos_pelicula():
+    # Crear instancia del servicio de base de datos
+    db_service = DBService()
+
+    # Nombre de la película cuya categoría quieres actualizar
+    nombre_pelicula = "Los Increibles"
+
+    # La nueva categoría para la película
+    nueva_categoria = "Accion"
+
+    # Llamar al método para actualizar la categoría de la película
+    db_service.actualizar_categoria_pelicula(nombre_pelicula, nueva_categoria)
+
+    print(
+        f"La categoría de la película '{nombre_pelicula}' ha sido actualizada a '{nueva_categoria}'."
+    )
+
+
 if __name__ == "__main__":
     # test_cassandra_connection()
     consulta_usuario_pelicula()
     insercion_datos()
+    actualizar_datos_pelicula()

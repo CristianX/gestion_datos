@@ -139,3 +139,55 @@ class DBService:
         VALUES (%s, %s, %s, %s)
         """
         self.session.execute(query, (sala_nro, sala_capacidad, cine_nombre, cine_id))
+
+    # Creación de funciones de actualización de datos
+    # Dado que la categoría de la película se encuentra en Tabla1,
+    # Tabla6, y SoportePelicula, el método deberá actualizar todas estas tablas
+    # para mantener la consistencia de los datos.
+    def actualizar_categoria_pelicula(self, nombre_pelicula, nueva_categoria):
+        """
+        Para actualizar la categoría de una película cuando pelicula_categoria es parte de la clave primaria
+        y teniendo en cuenta las limitaciones de Cassandra respecto a la inmutabilidad de las claves primarias,
+        se optó por eliminar la fila existente y reinsertarla con la nueva categoría.
+        Esto implica manejar cuidadosamente la operación para preservar cualquier otro dato asociado a la película
+        que no se deba perder.
+        """
+        pelicula = self.consultar_pelicula_por_nombre(nombre_pelicula)
+        if not pelicula:
+            print("Película no encontrada")
+            return
+
+        # Luego, elimina la fila existente
+        self.session.execute(
+            "DELETE FROM Tabla1 WHERE pelicula_nombre = %s", (nombre_pelicula,)
+        )
+
+        # Finalmente, reinserta la fila con la nueva categoría
+        self.session.execute(
+            "INSERT INTO Tabla1 (pelicula_nombre, pelicula_categoria, pelicula_actores) VALUES (%s, %s, %s)",
+            (nombre_pelicula, nueva_categoria, pelicula.actores),
+        )
+
+        # Realizar la misma operación para Tabla6, usando los atributos directamente
+        self.session.execute(
+            "DELETE FROM Tabla6 WHERE pelicula_nombre = %s", (nombre_pelicula,)
+        )
+        self.session.execute(
+            "INSERT INTO Tabla6 (pelicula_nombre, pelicula_categoria, pelicula_actores, pelicula_todos_los_publicos) VALUES (%s, %s, %s, %s)",
+            (
+                nombre_pelicula,
+                nueva_categoria,
+                pelicula.actores,
+                pelicula.todos_los_publicos,
+            ),
+        )
+
+        # Actualiza también la información en SoportePelicula
+        self.session.execute(
+            "UPDATE SoportePelicula SET categoria = %s WHERE nombre = %s",
+            (nueva_categoria, nombre_pelicula),
+        )
+
+        print(
+            f"La categoría de la película '{nombre_pelicula}' ha sido actualizada en todas las tablas relevantes."
+        )
