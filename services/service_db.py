@@ -191,3 +191,35 @@ class DBService:
         print(
             f"La categoría de la película '{nombre_pelicula}' ha sido actualizada en todas las tablas relevantes."
         )
+
+    # Creación de funciones de borrado de datos
+    # Debido a que se necesita borrar el usuario de la tabla7 y soporteusuario se deberá crear
+    # un método adicional donde se pueda obtener el dni por nombre
+    def obtener_dni_por_nombre(self, nombre_usuario):
+        # Intenta obtener el DNI a partir del nombre del usuario de la Tabla7
+        query = "SELECT usuario_dni FROM Tabla7 WHERE usuario_nombre = %s"
+        rows = self.session.execute(query, (nombre_usuario,))
+        for row in rows:
+            return row.usuario_dni
+        return None
+
+    def borrar_usuario_por_nombre(self, nombre_usuario):
+        # Obtener el DNI asociado al nombre del usuario
+        dni_usuario = self.obtener_dni_por_nombre(nombre_usuario)
+
+        if dni_usuario:
+            # Borrar el usuario de SoporteUsuario
+            self.session.execute(
+                "DELETE FROM SoporteUsuario WHERE dni = %s", (dni_usuario,)
+            )
+
+            # Borrar el usuario de Tabla7
+            self.session.execute(
+                "DELETE FROM Tabla7 WHERE usuario_nombre = %s", (nombre_usuario,)
+            )
+
+            print(f"Usuario '{nombre_usuario}' ha sido borrado de la base de datos.")
+        else:
+            print(
+                f"No se pudo encontrar el DNI para '{nombre_usuario}', no se realizó el borrado."
+            )

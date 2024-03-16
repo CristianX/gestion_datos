@@ -78,8 +78,22 @@ def actualizar_datos_pelicula():
     )
 
 
+def borrar_usuario_por_nombre():
+    # Crear una instancia de DBService
+    db_service = DBService()
+
+    # Nombre del usuario que deseas borrar
+    nombre_usuario = "Juan Perez"
+
+    # Llamar al método para borrar el usuario por su nombre
+    db_service.borrar_usuario_por_nombre(nombre_usuario)
+
+    print(f"Se ha intentado borrar al usuario '{nombre_usuario}'.")
+
+
 if __name__ == "__main__":
     # test_cassandra_connection()
     consulta_usuario_pelicula()
     insercion_datos()
     actualizar_datos_pelicula()
+    borrar_usuario_por_nombre()
