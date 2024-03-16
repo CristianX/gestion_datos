@@ -127,10 +127,63 @@ def realizar_consultas_info_general():
     db_service.consultar_funciones_por_ciudad("Quito")
 
 
+# Interfaz de usuario
+def main():
+    db_service = DBService()
+    while True:
+        print("Seleccione una operación para continuar:")
+        print("1. Consultar películas por categoría")
+        print("2. Consultar reservas por DNI")
+        print("3. Consultar salas por cine")
+        print("4. Consultar reservas por usuario")
+        print("5. Consultar reservas confirmadas por banco")
+        print("6. Consultar películas para todos los públicos")
+        print("7. Consultar usuario por nombre o DNI")
+        print("8. Consultar funciones por ciudad")
+        print("0. Salir")
+
+        opcion = input("Ingrese el número de la operación deseada: ")
+
+        if opcion == "1":
+            categoria = input("Ingrese la categoría de las películas a consultar: ")
+            db_service.consultar_peliculas_por_categoria(categoria)
+        elif opcion == "2":
+            dni = input("Ingrese el DNI del usuario para consultar sus reservas: ")
+            db_service.consultar_reservas_por_dni_tipo_boleto(dni)
+        elif opcion == "3":
+            cine_nombre = input("Ingrese el nombre del cine para consultar sus salas: ")
+            db_service.consultar_salas_por_cine(cine_nombre)
+        elif opcion == "4":
+            usuario_nombre = input(
+                "Ingrese el nombre del usuario para consultar sus reservas: "
+            )
+            db_service.consultar_reservas_por_usuario(usuario_nombre)
+        elif opcion == "5":
+            banco = input("Ingrese el nombre del banco para consultar las reservas: ")
+            db_service.consultar_reservas_por_banco(banco)
+        elif opcion == "6":
+            db_service.consultar_peliculas_todos_publicos()
+        elif opcion == "7":
+            valor = input("Ingrese el nombre o DNI del usuario a consultar: ")
+            tipo_busqueda = input("¿Desea buscar por nombre o DNI? (nombre/dni): ")
+            db_service.consultar_usuario_por_nombre_dni(valor, tipo_busqueda)
+        elif opcion == "8":
+            ciudad = input(
+                "Ingrese el nombre de la ciudad para consultar sus funciones: "
+            )
+            db_service.consultar_funciones_por_ciudad(ciudad)
+        elif opcion == "0":
+            print("Gracias por utilizar el sistema. ¡Hasta pronto!")
+            break
+        else:
+            print("Opción no válida, intente nuevamente.")
+
+
 if __name__ == "__main__":
     # test_cassandra_connection()
-    consulta_usuario_pelicula()
-    insercion_datos()
-    actualizar_datos_pelicula()
+    # consulta_usuario_pelicula()
+    # insercion_datos()
+    # actualizar_datos_pelicula()
     # borrar_usuario_por_nombre()
-    realizar_consultas_info_general()
+    # realizar_consultas_info_general()
+    main()
