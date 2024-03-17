@@ -320,9 +320,19 @@ class DBService:
     # Tabla7: Usuarios por nombre o DNI
     def consultar_usuario_por_nombre_dni(self, valor, buscar_por="nombre"):
         if buscar_por == "nombre":
-            query = "SELECT usuario_nombre, usuario_dni, usuario_tlfs FROM Tabla7 WHERE usuario_nombre = %s"
+            query = """
+            SELECT usuario_nombre, usuario_dni, usuario_tlfs 
+            FROM Tabla7 
+            WHERE usuario_nombre = %s 
+            ALLOW FILTERING
+            """
         else:  # buscar_por == "dni"
-            query = "SELECT usuario_nombre, usuario_dni, usuario_tlfs FROM Tabla7 WHERE usuario_dni = %s"
+            query = """
+            SELECT usuario_nombre, usuario_dni, usuario_tlfs 
+            FROM Tabla7 
+            WHERE usuario_dni = %s 
+            ALLOW FILTERING
+            """
         usuarios = self.session.execute(query, (valor,))
         for usuario in usuarios:
             print(

@@ -131,6 +131,7 @@ def realizar_consultas_info_general():
 def main():
     db_service = DBService()
     while True:
+        print("\n--- Sistema de Gestión de Base de Datos Cassandra ---")
         print("Seleccione una operación para continuar:")
         print("1. Consultar películas por categoría")
         print("2. Consultar reservas por DNI")
@@ -140,6 +141,11 @@ def main():
         print("6. Consultar películas para todos los públicos")
         print("7. Consultar usuario por nombre o DNI")
         print("8. Consultar funciones por ciudad")
+        print("9. Insertar un nuevo usuario")
+        print("10. Insertar una nueva película")
+        print("11. Insertar una nueva reserva")
+        print("12. Actualizar la categoría de una película")
+        print("13. Borrar un usuario")
         print("0. Salir")
 
         opcion = input("Ingrese el número de la operación deseada: ")
@@ -165,18 +171,50 @@ def main():
             db_service.consultar_peliculas_todos_publicos()
         elif opcion == "7":
             valor = input("Ingrese el nombre o DNI del usuario a consultar: ")
-            tipo_busqueda = input("¿Desea buscar por nombre o DNI? (nombre/dni): ")
-            db_service.consultar_usuario_por_nombre_dni(valor, tipo_busqueda)
+            buscar_por = (
+                "nombre" if input("Buscar por nombre (n) o DNI (d)? ") == "n" else "dni"
+            )
+            db_service.consultar_usuario_por_nombre_dni(valor, buscar_por)
         elif opcion == "8":
             ciudad = input(
                 "Ingrese el nombre de la ciudad para consultar sus funciones: "
             )
             db_service.consultar_funciones_por_ciudad(ciudad)
+        elif opcion == "9":
+            nombre = input("Nombre del usuario: ")
+            dni = input("DNI del usuario: ")
+            tlfs = set(input("Teléfonos del usuario (separados por coma): ").split(","))
+            usuario = Usuario(nombre=nombre, dni=dni, tlfs=tlfs)
+            db_service.insertar_usuario(usuario)
+        elif opcion == "10":
+            nombre = input("Nombre de la película: ")
+            categoria = input("Categoría de la película: ")
+            actores = set(
+                input("Actores de la película (separados por coma): ").split(",")
+            )
+            todos_los_publicos = input("¿Es para todos los públicos? (s/n): ") == "s"
+            pelicula = Pelicula(
+                nombre=nombre,
+                categoria=categoria,
+                actores=actores,
+                todos_los_publicos=todos_los_publicos,
+            )
+            db_service.insertar_pelicula(pelicula)
+        elif opcion == "11":
+            # Asegúrate de ajustar según tu modelo Reserva
+            print("Función no implementada en este ejemplo.")
+        elif opcion == "12":
+            nombre_pelicula = input("Nombre de la película a actualizar: ")
+            nueva_categoria = input("Nueva categoría de la película: ")
+            db_service.actualizar_categoria_pelicula(nombre_pelicula, nueva_categoria)
+        elif opcion == "13":
+            nombre_usuario = input("Nombre del usuario a borrar: ")
+            db_service.borrar_usuario_por_nombre(nombre_usuario)
         elif opcion == "0":
-            print("Gracias por utilizar el sistema. ¡Hasta pronto!")
+            print("Saliendo del sistema...")
             break
         else:
-            print("Opción no válida, intente nuevamente.")
+            print("Opción no válida, por favor intente nuevamente.")
 
 
 if __name__ == "__main__":
