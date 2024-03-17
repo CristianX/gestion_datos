@@ -39,13 +39,12 @@ def insercion_datos():
     db_service.insertar_pelicula(pelicula)
 
     # Ejemplo de inserción de una Reserva-Compra
-    # Asume que tienes un modelo o estructura para ReservaCompra
     reserva = Reserva(
         usuario_dni="123456789",
         tipo_boleto_nombre="General",
         tipo_boleto_descuento=10,
         reservacion_nro=1,
-        usuario_nombre="Juan Pérez",  # Asegúrate de incluir este argumento
+        usuario_nombre="Juan Pérez",
         confirmado=True,  # Este es un argumento opcional
         tarjeta_banco="Banco X",  # Este es un argumento opcional
     )
@@ -64,7 +63,7 @@ def actualizar_datos_pelicula():
     # Crear instancia del servicio de base de datos
     db_service = DBService()
 
-    # Nombre de la película cuya categoría quieres actualizar
+    # Nombre de la película cuya categoría se requiere actualizar
     nombre_pelicula = "Los Increibles"
 
     # La nueva categoría para la película
@@ -82,7 +81,7 @@ def borrar_usuario_por_nombre():
     # Crear una instancia de DBService
     db_service = DBService()
 
-    # Nombre del usuario que deseas borrar
+    # Nombre del usuario que se desea borrar
     nombre_usuario = "Juan Perez"
 
     # Llamar al método para borrar el usuario por su nombre
@@ -146,6 +145,8 @@ def main():
         print("11. Insertar una nueva reserva")
         print("12. Actualizar la categoría de una película")
         print("13. Borrar un usuario")
+        print("14. Incrementar la cantidad de reservas por usuario")
+        print("15. Insertar una nueva función en una ciudad")
         print("0. Salir")
 
         opcion = input("Ingrese el número de la operación deseada: ")
@@ -201,8 +202,37 @@ def main():
             )
             db_service.insertar_pelicula(pelicula)
         elif opcion == "11":
-            # Asegúrate de ajustar según tu modelo Reserva
-            print("Función no implementada en este ejemplo.")
+            # Recoger información de la reserva del usuario
+            usuario_dni = input("Ingrese el DNI del usuario para la reserva: ")
+            tipo_boleto_nombre = input("Ingrese el tipo de boleto para la reserva: ")
+            tipo_boleto_descuento = int(
+                input("Ingrese el descuento del boleto (en porcentaje): ")
+            )
+            reservacion_nro = int(input("Ingrese el número de reservación: "))
+            usuario_nombre = input("Ingrese el nombre completo del usuario: ")
+            confirmado = input("¿Está la reserva confirmada? (s/n): ").lower() == "s"
+            tarjeta_banco = (
+                input(
+                    "Ingrese el banco de la tarjeta utilizada para la reserva (dejar en blanco si no aplica): "
+                )
+                if confirmado
+                else None
+            )
+
+            # Crear una instancia de Reserva
+            reserva = Reserva(
+                usuario_dni=usuario_dni,
+                tipo_boleto_nombre=tipo_boleto_nombre,
+                tipo_boleto_descuento=tipo_boleto_descuento,
+                reservacion_nro=reservacion_nro,
+                usuario_nombre=usuario_nombre,
+                confirmado=confirmado,
+                tarjeta_banco=tarjeta_banco,
+            )
+
+            # Llamar al método apropiado para insertar la reserva
+            db_service.insertar_reserva_compra(reserva)
+            print("Reserva insertada correctamente.")
         elif opcion == "12":
             nombre_pelicula = input("Nombre de la película a actualizar: ")
             nueva_categoria = input("Nueva categoría de la película: ")
@@ -210,6 +240,23 @@ def main():
         elif opcion == "13":
             nombre_usuario = input("Nombre del usuario a borrar: ")
             db_service.borrar_usuario_por_nombre(nombre_usuario)
+        elif opcion == "14":
+            usuario_dni = input("Ingrese el DNI del usuario: ")
+            db_service.incrementar_reservas_usuario(usuario_dni)
+            print("Cantidad de reservas actualizada.")
+
+        elif opcion == "15":
+            ciudad_nombre = input("Ingrese el nombre de la ciudad: ")
+            sala_nro = int(input("Ingrese el número de la sala: "))
+            cine_nombre = input("Ingrese el nombre del cine: ")
+            cine_id = int(input("Ingrese el ID del cine: "))
+            cantidad_funciones = int(
+                input("Ingrese la cantidad de funciones a añadir: ")
+            )
+            db_service.insertar_funcion(
+                ciudad_nombre, sala_nro, cine_nombre, cine_id, cantidad_funciones
+            )
+            print("Función insertada correctamente.")
         elif opcion == "0":
             print("Saliendo del sistema...")
             break

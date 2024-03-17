@@ -352,3 +352,43 @@ class DBService:
             print(
                 f"Ciudad: {funcion.ciudad_nombre}, Número de Sala: {funcion.sala_nro}, Cine: {funcion.cine_nombre}, Cine ID: {funcion.cine_id}, Cantidad de Funciones: {funcion.funcion_cantidad}"
             )
+
+    # Extra (Inserción de información en tabla4)
+    # Debido a que esta tabla se encarga en rastrear la cantidad de reservas reralizadas por cada usuario
+    # se requiere de un métodoque incremente el contador de reservascada vez que se realice una nueva reserva
+    def incrementar_reservas_usuario(self, usuario_dni):
+        # Verificar si el usuario ya tiene reservas registradas
+        query = "SELECT reservacion_cantidad FROM Tabla4 WHERE usuario_dni = %s ALLOW FILTERING"
+        result = self.session.execute(query, (usuario_dni,)).one()
+
+        if result:
+            nueva_cantidad = result.reservacion_cantidad + 1
+            update_query = (
+                "UPDATE Tabla4 SET reservacion_cantidad = %s WHERE usuario_dni = %s"
+            )
+            self.session.execute(update_query, (nueva_cantidad, usuario_dni))
+        else:
+            # Si el usuario no tiene reservas, insertar una nueva fila con cantidad 1
+            usuario_info = self.consultar_usuario_por_dni(usuario_dni)
+            if usuario_info:
+                insert_query = "INSERT INTO Tabla4 (usuario_nombre, usuario_dni, reservacion_cantidad) VALUES (%s, %s, 1)"
+                self.session.execute(insert_query, (usuario_info.nombre, usuario_dni))
+            else:
+                print(
+                    f"No se encontró el usuario con DNI {usuario_dni} para insertar en Tabla4."
+                )
+
+    # Extra (Inserción de información en tabla8)
+    # Ya que tabla8 se encarga de rastrear funciones presentadas en diferentes ciudades
+    # se crea mètodo para insertar nuevas funcionesy para consultar las funciones existentes por ciudad
+    def insertar_funcion(
+        self, ciudad_nombre, sala_nro, cine_nombre, cine_id, cantidad_funciones
+    ):
+        insert_query = """
+        INSERT INTO Tabla8 (ciudad_nombre, sala_nro, cine_nombre, cine_id, funcion_cantidad)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        self.session.execute(
+            insert_query,
+            (ciudad_nombre, sala_nro, cine_nombre, cine_id, cantidad_funciones),
+        )
