@@ -5,6 +5,7 @@ from models.reserva import Reserva
 
 
 def consulta_usuario_pelicula():
+    # Crear una instancia de DBService
     db_service = DBService()
     usuario = db_service.consultar_usuario_por_dni("123456789")
     if usuario:
@@ -20,7 +21,6 @@ def consulta_usuario_pelicula():
 
 
 def insercion_datos():
-    # Crear una instancia de DBService
     db_service = DBService()
 
     # Ejemplo de inserción de un Usuario
@@ -44,7 +44,7 @@ def insercion_datos():
         tipo_boleto_nombre="General",
         tipo_boleto_descuento=10,
         reservacion_nro=1,
-        usuario_nombre="Juan Pérez",
+        usuario_nombre="Juan Perez",
         confirmado=True,  # Este es un argumento opcional
         tarjeta_banco="Banco X",  # Este es un argumento opcional
     )

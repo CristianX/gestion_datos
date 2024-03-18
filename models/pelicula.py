@@ -6,4 +6,4 @@ class Pelicula:
         self.nombre = nombre
         self.categoria = categoria
         self.actores = actores
-        self.todos_los_publicos = todos_los_publicos  # Opcional, basado en Tabla6
+        self.todos_los_publicos = todos_los_publicos

@@ -9,7 +9,7 @@ class Reserva:
         tipo_boleto_nombre,
         tipo_boleto_descuento,
         reservacion_nro,
-        usuario_nombre,  # Agregar este atributo
+        usuario_nombre,  # Este atributo agregado
         confirmado=None,
         tarjeta_banco=None,
     ):
@@ -17,6 +17,6 @@ class Reserva:
         self.tipo_boleto_nombre = tipo_boleto_nombre
         self.tipo_boleto_descuento = tipo_boleto_descuento
         self.reservacion_nro = reservacion_nro
-        self.usuario_nombre = usuario_nombre  # Inicializarlo aquí
+        self.usuario_nombre = usuario_nombre
         self.confirmado = confirmado
         self.tarjeta_banco = tarjeta_banco

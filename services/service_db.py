@@ -31,20 +31,20 @@ class DBService:
 
     def insertar_usuario(self, usuario):
         # Inserción en Tabla7 (usuario_nombre, usuario_dni, usuario_tlfs)
+        # En este método no se usa un array de querys ya que el orden de los atributos en Tabla7 y SoporteUsuario son diferentes
         self.session.execute(
             "INSERT INTO Tabla7 (usuario_nombre, usuario_dni, usuario_tlfs) VALUES (%s, %s, %s)",
             (usuario.nombre, usuario.dni, usuario.tlfs),
         )
 
         # Inserción en SoporteUsuario (dni, nombre, tlfs)
-        # Asegúrate de que los parámetros estén en el orden correcto según el esquema de SoporteUsuario
         self.session.execute(
             "INSERT INTO SoporteUsuario (dni, nombre, tlfs) VALUES (%s, %s, %s)",
             (
                 usuario.dni,
                 usuario.nombre,
                 usuario.tlfs,
-            ),  # Corrección aquí: primero dni, luego nombre
+            ),
         )
 
     def insertar_pelicula(self, pelicula):
@@ -88,7 +88,7 @@ class DBService:
             ),
         )
 
-        # Insertar en Tabla5 si aplica (información de compra con tarjeta)
+        # Insertar en Tabla5 información de compra con tarjeta
         if reserva.confirmado is not None and reserva.tarjeta_banco is not None:
             query_tabla5 = """
             INSERT INTO Tabla5 (reservacion_confirmado, tarjeta_banco, reservacion_nro) 
@@ -157,7 +157,7 @@ class DBService:
             print("Película no encontrada")
             return
 
-        # Luego, elimina la fila existente
+        # Luego, eliminar la fila existente
         self.session.execute(
             "DELETE FROM Tabla1 WHERE pelicula_nombre = %s", (nombre_pelicula,)
         )
@@ -168,7 +168,6 @@ class DBService:
             (nombre_pelicula, nueva_categoria, pelicula.actores),
         )
 
-        # Realizar la misma operación para Tabla6, usando los atributos directamente
         self.session.execute(
             "DELETE FROM Tabla6 WHERE pelicula_nombre = %s", (nombre_pelicula,)
         )
@@ -354,29 +353,29 @@ class DBService:
             )
 
     # Extra (Inserción de información en tabla4)
-    # Debido a que esta tabla se encarga en rastrear la cantidad de reservas reralizadas por cada usuario
+    # Debido a que esta tabla se encarga en rastrear la cantidad de reservas realizadas por cada usuario
     # se requiere de un métodoque incremente el contador de reservascada vez que se realice una nueva reserva
     def incrementar_reservas_usuario(self, usuario_dni):
-        # Verificar si el usuario ya tiene reservas registradas
-        query = "SELECT reservacion_cantidad FROM Tabla4 WHERE usuario_dni = %s ALLOW FILTERING"
-        result = self.session.execute(query, (usuario_dni,)).one()
+        # Intenta obtener el nombre del usuario basado en el DNI
+        usuario_info = self.consultar_usuario_por_dni(usuario_dni)
+        if usuario_info:
+            usuario_nombre = usuario_info.nombre
+            # Verificar si el usuario ya tiene reservas registradas
+            query = "SELECT reservacion_cantidad FROM Tabla4 WHERE usuario_dni = %s AND usuario_nombre = %s"
+            result = self.session.execute(query, (usuario_dni, usuario_nombre)).one()
 
-        if result:
-            nueva_cantidad = result.reservacion_cantidad + 1
-            update_query = (
-                "UPDATE Tabla4 SET reservacion_cantidad = %s WHERE usuario_dni = %s"
-            )
-            self.session.execute(update_query, (nueva_cantidad, usuario_dni))
-        else:
-            # Si el usuario no tiene reservas, insertar una nueva fila con cantidad 1
-            usuario_info = self.consultar_usuario_por_dni(usuario_dni)
-            if usuario_info:
-                insert_query = "INSERT INTO Tabla4 (usuario_nombre, usuario_dni, reservacion_cantidad) VALUES (%s, %s, 1)"
-                self.session.execute(insert_query, (usuario_info.nombre, usuario_dni))
-            else:
-                print(
-                    f"No se encontró el usuario con DNI {usuario_dni} para insertar en Tabla4."
+            if result:
+                nueva_cantidad = result.reservacion_cantidad + 1
+                update_query = "UPDATE Tabla4 SET reservacion_cantidad = %s WHERE usuario_dni = %s AND usuario_nombre = %s"
+                self.session.execute(
+                    update_query, (nueva_cantidad, usuario_dni, usuario_nombre)
                 )
+            else:
+                # Si el usuario no tiene reservas, insertar una nueva fila con cantidad 1
+                insert_query = "INSERT INTO Tabla4 (usuario_nombre, usuario_dni, reservacion_cantidad) VALUES (%s, %s, 1)"
+                self.session.execute(insert_query, (usuario_nombre, usuario_dni))
+        else:
+            print(f"No se encontró el usuario con DNI {usuario_dni}.")
 
     # Extra (Inserción de información en tabla8)
     # Ya que tabla8 se encarga de rastrear funciones presentadas en diferentes ciudades
